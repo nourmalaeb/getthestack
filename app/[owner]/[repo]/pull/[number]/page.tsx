@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { GitHubError, getPull } from "@/lib/github";
 
@@ -29,6 +30,9 @@ export default async function PullRedirect(
         </a>{" "}
         isn&apos;t in a stack.
       </p>
+      <Link href="/" className="mt-6 inline-block text-sm underline">
+        Try another pull request
+      </Link>
     </main>
   );
 }
