@@ -40,25 +40,18 @@ export default async function StackPage(props: Props) {
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
       {/* React hoists this into <head>. Set here rather than in metadata
           alternates so the href stays relative without a metadataBase. */}
-      <link
-        rel="alternate"
-        type="text/markdown"
-        href={markdownHref}
-      />
+      <link rel="alternate" type="text/markdown" href={markdownHref} />
       <header className="mb-8">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <a
             href={`https://github.com/${owner}/${repo}`}
-            className="text-sm text-neutral-500 hover:underline"
+            className="text-sm text-secondary hover:underline"
           >
             {owner}/{repo}
           </a>
           {/* For pasting into an LLM or agent. */}
-          <span className="flex items-center gap-1.5 text-xs text-neutral-500">
-            <a
-              href={markdownHref}
-              className="hover:text-foreground hover:underline"
-            >
+          <span className="flex items-center gap-1.5 text-xs text-secondary">
+            <a href={markdownHref} className="hover:text-foreground hover:underline">
               Markdown
             </a>
             <CopyButton href={markdownHref} copy="url">
@@ -69,28 +62,23 @@ export default async function StackPage(props: Props) {
             </CopyButton>
           </span>
         </div>
-        <h1 className="mt-1 text-2xl font-semibold">
-          Stack #{stack.number}
-        </h1>
-        <p className="mt-2 text-sm text-neutral-500">
-          <StackBadge stack={stack} /> · {pulls.length} pull requests ·{" "}
-          {merged} merged · into{" "}
+        <h1 className="mt-1 text-2xl font-semibold">Stack #{stack.number}</h1>
+        <p className="mt-2 text-sm text-secondary">
+          <StackBadge stack={stack} /> · {pulls.length} pull requests · {merged} merged · into{" "}
           <code className="font-mono">{stack.base.ref}</code>
         </p>
-        <div className="mt-5 flex items-start justify-between gap-4 text-sm text-neutral-500">
+        <div className="mt-5 flex items-start justify-between gap-4 text-sm text-secondary">
           {/* Both versions render; CSS shows the one for the saved order, so
               it's right before hydration. */}
           <p aria-live="polite">
             <span className="bottom-up:hidden">
-              <span className="font-medium">↓ Top of the stack first.</span>{" "}
-              The bottom pull request merges into{" "}
-              <code className="font-mono">{stack.base.ref}</code> first, and
-              each one builds on the one below it.
+              <span className="font-medium">↓ Top of the stack first.</span> The bottom pull request
+              merges into <code className="font-mono">{stack.base.ref}</code> first, and each one
+              builds on the one below it.
             </span>
             <span className="hidden bottom-up:inline">
-              <span className="font-medium">↑ Bottom of the stack first.</span>{" "}
-              The first pull request merges into{" "}
-              <code className="font-mono">{stack.base.ref}</code> first, and
+              <span className="font-medium">↑ Bottom of the stack first.</span> The first pull
+              request merges into <code className="font-mono">{stack.base.ref}</code> first, and
               each one builds on the one above it.
             </span>
           </p>
@@ -101,11 +89,7 @@ export default async function StackPage(props: Props) {
       <StackList
         items={topDown.map((pr, i) => (
           <li key={pr.number}>
-            <PullCard
-              pr={pr}
-              position={pulls.length - i}
-              size={pulls.length}
-            />
+            <PullCard pr={pr} position={pulls.length - i} size={pulls.length} />
           </li>
         ))}
         base={
@@ -114,14 +98,14 @@ export default async function StackPage(props: Props) {
           <div className="flex items-center gap-4 border border-transparent px-4 font-mono text-sm">
             <span
               aria-hidden
-              className="shrink-0 text-right text-neutral-400"
+              className="shrink-0 text-right text-secondary"
               style={{ width: numberColumnWidth(pulls.length) }}
             >
               <span className="bottom-up:hidden">└</span>
               <span className="hidden bottom-up:inline">┌</span>
             </span>
             <span className="sr-only">Base branch:</span>
-            <span className="rounded-md bg-neutral-100 px-2 py-0.5 font-medium text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200">
+            <span className="rounded-md bg-neutral-100 px-2 py-0.5 font-medium text-secondary dark:bg-neutral-800 dark:text-secondary">
               {stack.base.ref}
             </span>
           </div>
@@ -140,23 +124,15 @@ function StackBadge({ stack }: { stack: Stack }) {
   return stack.open ? (
     <span className="text-green-600 dark:text-green-400">Open</span>
   ) : (
-    <span className="text-neutral-500">Closed</span>
+    <span className="text-secondary">Closed</span>
   );
 }
 
-function PullCard({
-  pr,
-  position,
-  size,
-}: {
-  pr: PullRequest;
-  position: number;
-  size: number;
-}) {
+function PullCard({ pr, position, size }: { pr: PullRequest; position: number; size: number }) {
   return (
     <div className="flex gap-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
       <span
-        className="shrink-0 pt-0.5 text-right font-mono text-sm text-neutral-400"
+        className="shrink-0 pt-0.5 text-right font-mono text-sm text-secondary"
         style={{ width: numberColumnWidth(size) }}
       >
         <span aria-hidden>{position}</span>
@@ -181,26 +157,16 @@ function PullCard({
           </h2>
           <PullStatus pr={pr} />
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-500">
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-secondary">
           <span>#{pr.number}</span>
           <span className="flex items-center gap-1.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={pr.user.avatar_url}
-              alt=""
-              width={16}
-              height={16}
-              className="rounded-full"
-            />
+            <img src={pr.user.avatar_url} alt="" width={16} height={16} className="rounded-full" />
             {pr.user.login}
           </span>
           <span className="font-mono">
-            <span className="text-green-600 dark:text-green-400">
-              +{pr.additions}
-            </span>{" "}
-            <span className="text-red-600 dark:text-red-400">
-              −{pr.deletions}
-            </span>
+            <span className="text-green-600 dark:text-green-400">+{pr.additions}</span>{" "}
+            <span className="text-red-600 dark:text-red-400">−{pr.deletions}</span>
           </span>
           <span>{pr.changed_files} files</span>
           {pr.comments + pr.review_comments > 0 && (
@@ -214,10 +180,8 @@ function PullCard({
 
         {pr.body_html?.trim() && (
           <details className="group mt-3">
-            <summary className="cursor-pointer list-none text-sm text-neutral-500 select-none hover:text-foreground [&::-webkit-details-marker]:hidden">
-              <span className="inline-block transition-transform group-open:rotate-90">
-                ›
-              </span>{" "}
+            <summary className="cursor-pointer list-none text-sm text-secondary select-none hover:text-foreground [&::-webkit-details-marker]:hidden">
+              <span className="inline-block transition-transform group-open:rotate-90">›</span>{" "}
               Description
             </summary>
             <div
@@ -232,17 +196,11 @@ function PullCard({
   );
 }
 
-function QuickLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
+function QuickLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <a
       href={href}
-      className="rounded-md border border-neutral-200 px-2 py-0.5 text-xs text-neutral-600 transition-colors hover:border-neutral-400 hover:text-foreground dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600"
+      className="rounded-md border border-neutral-200 px-2 py-0.5 text-xs text-secondary transition-colors hover:border-neutral-400 hover:text-foreground dark:border-neutral-800 dark:text-secondary dark:hover:border-neutral-600"
     >
       {children}
     </a>
@@ -255,13 +213,11 @@ function PullStatus({ pr }: { pr: PullRequest }) {
     : pr.state === "closed"
       ? ["Closed", "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"]
       : pr.draft
-        ? ["Draft", "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"]
+        ? ["Draft", "bg-neutral-100 text-secondary dark:bg-neutral-800 dark:text-secondary"]
         : ["Open", "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300"];
 
   return (
-    <span
-      className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${className}`}
-    >
+    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${className}`}>
       {label}
     </span>
   );

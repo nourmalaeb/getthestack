@@ -2,12 +2,11 @@ export default async function Home(props: PageProps<"/">) {
   const { error } = await props.searchParams;
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center px-4 py-16">
+    <main className="mx-auto flex w-full min-h-full flex-col grow justify-center">
       <h1 className="text-3xl font-semibold">Get the stack</h1>
-      <p className="mt-2 text-neutral-500">
-        Shareable links for GitHub stacked pull requests. Paste any PR in a
-        stack, or swap <code className="font-mono">github.com</code> for this
-        site in a PR URL.
+      <p className="mt-2 text-secondary">
+        Shareable links for GitHub stacked pull requests. Paste any PR in a stack, or swap{" "}
+        <code className="font-mono">github.com</code> for this site in a PR URL.
       </p>
 
       <form action="/go" className="mt-8 flex gap-2">

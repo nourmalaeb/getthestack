@@ -39,15 +39,11 @@ export function CopyButton({
     <button
       type="button"
       onClick={onClick}
-      className="rounded-md border border-neutral-200 px-2 py-0.5 text-xs text-neutral-600 transition-colors hover:border-neutral-400 hover:text-foreground dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600"
+      className="rounded-md border border-neutral-200 px-2 py-0.5 text-xs text-secondary transition-colors hover:border-neutral-400 hover:text-foreground dark:border-neutral-800 dark:text-secondary dark:hover:border-neutral-600"
     >
       {/* aria-live so screen readers hear the result, not just the click. */}
       <span aria-live="polite">
-        {state === "copied"
-          ? "Copied"
-          : state === "failed"
-            ? "Copy failed"
-            : children}
+        {state === "copied" ? "Copied" : state === "failed" ? "Copy failed" : children}
       </span>
     </button>
   );

@@ -7,11 +7,13 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --secondary: #555555;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-secondary: var(--secondary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -20,6 +22,7 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --secondary: #999999;
   }
 }
 

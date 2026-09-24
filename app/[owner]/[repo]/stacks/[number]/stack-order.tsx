@@ -10,10 +10,7 @@ const listeners = new Set<() => void>();
 function read(): StackOrder {
   if (current === undefined) {
     try {
-      current =
-        localStorage.getItem(STACK_ORDER_KEY) === "bottom-up"
-          ? "bottom-up"
-          : "top-down";
+      current = localStorage.getItem(STACK_ORDER_KEY) === "bottom-up" ? "bottom-up" : "top-down";
     } catch {
       current = "top-down";
     }
@@ -63,10 +60,8 @@ export function ReverseButton() {
   return (
     <button
       type="button"
-      onClick={() =>
-        setStackOrder(read() === "top-down" ? "bottom-up" : "top-down")
-      }
-      className="shrink-0 rounded-md border border-neutral-200 px-2 py-0.5 text-xs text-neutral-600 transition-colors hover:border-neutral-400 hover:text-foreground dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600"
+      onClick={() => setStackOrder(read() === "top-down" ? "bottom-up" : "top-down")}
+      className="shrink-0 rounded-md border border-neutral-200 px-2 py-0.5 text-xs text-secondary transition-colors hover:border-neutral-400 hover:text-foreground dark:border-neutral-800 dark:text-secondary dark:hover:border-neutral-600"
     >
       <span aria-hidden>⇅</span> Reverse order
     </button>
@@ -77,13 +72,7 @@ export function ReverseButton() {
  * The pull request list plus the base branch line, in the saved order.
  * `items` and `base` arrive top of the stack first.
  */
-export function StackList({
-  items,
-  base,
-}: {
-  items: React.ReactNode[];
-  base: React.ReactNode;
-}) {
+export function StackList({ items, base }: { items: React.ReactNode[]; base: React.ReactNode }) {
   const order = useStackOrder();
 
   // Dev Strict Mode remounts reset <html> to its JSX attributes, dropping the

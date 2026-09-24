@@ -30,16 +30,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: stackOrderScript }} />
       </head>
-      <body className="min-h-full flex flex-col">
-        <header className="mx-auto w-full max-w-3xl px-4 pt-6">
-          <Link
-            href="/"
-            className="font-mono text-sm text-neutral-500 hover:text-foreground"
-          >
-            getthestack
-          </Link>
-        </header>
-        {children}
+      <body className="min-h-dvh">
+        <div className="max-w-3xl p-4 mx-auto min-h-dvh flex flex-col">
+          <header className="w-full">
+            <Link href="/" className="font-mono text-sm text-secondary hover:text-foreground">
+              getthestack
+            </Link>
+          </header>
+          <div className="grow flex flex-col">{children}</div>
+          <footer>
+            <p className="text-sm text-secondary">A simple tool by Nour Malaeb.</p>
+          </footer>
+        </div>
       </body>
     </html>
   );
