@@ -21,20 +21,20 @@ function read(): StackOrder {
   return current;
 }
 
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  // Follow changes made in other tabs.
-  function onStorage(e: StorageEvent) {
-    if (e.key !== STACK_ORDER_KEY) return;
+// Follow changes made in other tabs, even while no stack is on screen, so
+// the cached value never goes stale. key is null when storage was cleared.
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== STACK_ORDER_KEY && e.key !== null) return;
     current = e.newValue === "bottom-up" ? "bottom-up" : "top-down";
     applyToDocument(current);
-    listener();
-  }
-  window.addEventListener("storage", onStorage);
-  return () => {
-    listeners.delete(listener);
-    window.removeEventListener("storage", onStorage);
-  };
+    listeners.forEach((l) => l());
+  });
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
 }
 
 function applyToDocument(order: StackOrder) {
@@ -87,8 +87,10 @@ export function StackList({
   const order = useStackOrder();
 
   // Dev Strict Mode remounts reset <html> to its JSX attributes, dropping the
-  // one the inline script set. A no-op in production.
-  useLayoutEffect(() => applyToDocument(order), [order]);
+  // one the inline script set. Writes read(), not order: on the hydration
+  // render order is still the server's top-down, and writing that would undo
+  // the inline script and flash top-down until the saved order takes over.
+  useLayoutEffect(() => applyToDocument(read()), [order]);
 
   const topDown = order === "top-down";
   // In DOM order, so reading and tabbing follow what's on screen.
