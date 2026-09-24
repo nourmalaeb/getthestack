@@ -82,8 +82,11 @@ export default async function StackPage(props: Props) {
         </p>
       </header>
 
-      {/* reversed: the list runs top-down, so its numbering counts down to 1. */}
-      <ol reversed className="flex flex-col gap-3">
+      {/* reversed: the list runs top-down, so its implicit numbering counts
+          down to 1 to match the positions shown. Markers stay hidden; adding
+          them would repeat each number. role="list" because WebKit drops list
+          semantics when list-style is none. */}
+      <ol reversed role="list" className="flex flex-col gap-3">
         {topDown.map((pr, i) => (
           <li key={pr.number}>
             <PullCard
@@ -124,11 +127,17 @@ function PullCard({
   return (
     <div className="flex gap-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
       <span className="w-6 shrink-0 pt-0.5 text-right font-mono text-sm text-neutral-400">
-        {position}
+        <span aria-hidden>{position}</span>
         <span className="sr-only">
-          {" "}
-          of {size}
-          {position === 1 ? " (bottom)" : position === size ? " (top)" : ""}
+          {`Position ${position} of ${size}${
+            size === 1
+              ? " (only)"
+              : position === 1
+                ? " (bottom)"
+                : position === size
+                  ? " (top)"
+                  : ""
+          }`}
         </span>
       </span>
       <div className="min-w-0 flex-1">
