@@ -9,6 +9,8 @@ export class GitHubError extends Error {
   constructor(
     public status: number,
     message: string,
+    /** Seconds until the rate limit resets, when that's why the call failed. */
+    public retryAfter?: number,
   ) {
     super(message);
   }
@@ -30,7 +32,12 @@ async function gh<T>(
 
   if (!res.ok) {
     if (res.headers.get("x-ratelimit-remaining") === "0") {
-      throw new GitHubError(res.status, "GitHub API rate limit exceeded");
+      const reset = Number(res.headers.get("x-ratelimit-reset"));
+      throw new GitHubError(
+        res.status,
+        "GitHub API rate limit exceeded",
+        Math.max(1, Math.ceil(reset - Date.now() / 1000)) || 60,
+      );
     }
     throw new GitHubError(res.status, `GitHub API ${res.status} for ${path}`);
   }
@@ -58,12 +65,16 @@ export type Stack = {
 export type PullRequest = {
   number: number;
   title: string;
+  /** Raw markdown of the description. */
+  body?: string | null;
   /** GitHub-rendered, sanitized HTML of the description. */
   body_html?: string | null;
   html_url: string;
   state: "open" | "closed";
   draft: boolean;
   merged_at: string | null;
+  head: { ref: string };
+  base: { ref: string };
   user: { login: string; avatar_url: string; html_url: string };
   additions: number;
   deletions: number;
