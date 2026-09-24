@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { GitHubError, type PullRequest, type Stack } from "@/lib/github";
 import { loadStack } from "@/lib/stack";
+import { CopyLink } from "./copy-link";
 
 type Props = PageProps<"/[owner]/[repo]/stacks/[number]">;
 
@@ -31,6 +32,7 @@ export default async function StackPage(props: Props) {
   const merged = pulls.filter((p) => p.merged_at).length;
   // Render top of the stack first, so the base branch sits at the bottom.
   const topDown = [...pulls].reverse();
+  const markdownHref = `/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/stacks/${stack.number}.md`;
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
@@ -39,15 +41,27 @@ export default async function StackPage(props: Props) {
       <link
         rel="alternate"
         type="text/markdown"
-        href={`/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/stacks/${stack.number}.md`}
+        href={markdownHref}
       />
       <header className="mb-8">
-        <a
-          href={`https://github.com/${owner}/${repo}`}
-          className="text-sm text-neutral-500 hover:underline"
-        >
-          {owner}/{repo}
-        </a>
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <a
+            href={`https://github.com/${owner}/${repo}`}
+            className="text-sm text-neutral-500 hover:underline"
+          >
+            {owner}/{repo}
+          </a>
+          {/* For pasting into an LLM or agent. */}
+          <span className="flex items-center gap-1.5 text-xs text-neutral-500">
+            <a
+              href={markdownHref}
+              className="hover:text-foreground hover:underline"
+            >
+              Markdown
+            </a>
+            <CopyLink href={markdownHref} label="Copy Markdown link" />
+          </span>
+        </div>
         <h1 className="mt-1 text-2xl font-semibold">
           Stack #{stack.number}
         </h1>
