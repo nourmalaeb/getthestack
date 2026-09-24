@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { stackOrderScript } from "@/lib/stack-order";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,7 +24,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      // The inline script below may add data-stack-order before hydration.
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: stackOrderScript }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <header className="mx-auto w-full max-w-3xl px-4 pt-6">
           <Link

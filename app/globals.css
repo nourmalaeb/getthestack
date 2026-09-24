@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Set on <html> from the saved stack order (see lib/stack-order.ts). */
+@custom-variant bottom-up (html[data-stack-order="bottom-up"] &);
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -24,4 +27,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
+}
+
+/* Until the stack list hydrates, its DOM is in the server's top-down order.
+   Flip it visually when that disagrees with the saved order, so the first
+   paint is already right. After hydration the DOM order matches. */
+html[data-stack-order="bottom-up"] [data-stack-dom="top-down"],
+html:not([data-stack-order="bottom-up"]) [data-stack-dom="bottom-up"] {
+  flex-direction: column-reverse;
 }

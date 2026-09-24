@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { GitHubError, type PullRequest, type Stack } from "@/lib/github";
 import { loadStack } from "@/lib/stack";
 import { CopyButton } from "./copy-button";
+import { ReverseButton, StackList } from "./stack-order";
 
 type Props = PageProps<"/[owner]/[repo]/stacks/[number]">;
 
@@ -30,7 +31,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function StackPage(props: Props) {
   const { owner, repo, stack, pulls } = await load(props);
   const merged = pulls.filter((p) => p.merged_at).length;
-  // Render top of the stack first, so the base branch sits at the bottom.
+  // Top of the stack first, so the base branch sits at the bottom. StackList
+  // flips it if the reader prefers bottom first.
   const topDown = [...pulls].reverse();
   const markdownHref = `/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/stacks/${stack.number}.md`;
 
@@ -75,19 +77,29 @@ export default async function StackPage(props: Props) {
           {merged} merged · into{" "}
           <code className="font-mono">{stack.base.ref}</code>
         </p>
-        <p className="mt-1 text-sm text-neutral-500">
-          Top of the stack first. The bottom pull request merges into{" "}
-          <code className="font-mono">{stack.base.ref}</code> first, and each
-          one builds on the one below it.
-        </p>
+        <div className="mt-5 flex items-start justify-between gap-4 text-sm text-neutral-500">
+          {/* Both versions render; CSS shows the one for the saved order, so
+              it's right before hydration. */}
+          <p aria-live="polite">
+            <span className="bottom-up:hidden">
+              <span className="font-medium">↓ Top of the stack first.</span>{" "}
+              The bottom pull request merges into{" "}
+              <code className="font-mono">{stack.base.ref}</code> first, and
+              each one builds on the one below it.
+            </span>
+            <span className="hidden bottom-up:inline">
+              <span className="font-medium">↑ Bottom of the stack first.</span>{" "}
+              The first pull request merges into{" "}
+              <code className="font-mono">{stack.base.ref}</code> first, and
+              each one builds on the one above it.
+            </span>
+          </p>
+          <ReverseButton />
+        </div>
       </header>
 
-      {/* reversed: the list runs top-down, so its implicit numbering counts
-          down to 1 to match the positions shown. Markers stay hidden; adding
-          them would repeat each number. role="list" because WebKit drops list
-          semantics when list-style is none. */}
-      <ol reversed role="list" className="flex flex-col gap-3">
-        {topDown.map((pr, i) => (
+      <StackList
+        items={topDown.map((pr, i) => (
           <li key={pr.number}>
             <PullCard
               pr={pr}
@@ -96,15 +108,32 @@ export default async function StackPage(props: Props) {
             />
           </li>
         ))}
-      </ol>
-
-      <div className="mt-3 flex items-center gap-2 pl-4 font-mono text-sm text-neutral-500">
-        <span aria-hidden>└</span>
-        <span className="sr-only">Base branch:</span>
-        {stack.base.ref}
-      </div>
+        base={
+          // Same border, padding, and number column as PullCard, so the
+          // glyph lines up with the positions and the branch with the titles.
+          <div className="flex items-center gap-4 border border-transparent px-4 font-mono text-sm">
+            <span
+              aria-hidden
+              className="shrink-0 text-right text-neutral-400"
+              style={{ width: numberColumnWidth(pulls.length) }}
+            >
+              <span className="bottom-up:hidden">└</span>
+              <span className="hidden bottom-up:inline">┌</span>
+            </span>
+            <span className="sr-only">Base branch:</span>
+            <span className="rounded-md bg-neutral-100 px-2 py-0.5 font-medium text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200">
+              {stack.base.ref}
+            </span>
+          </div>
+        }
+      />
     </main>
   );
+}
+
+/** Just wide enough for the largest position, so the digits sit flush left. */
+function numberColumnWidth(size: number) {
+  return `${String(size).length}ch`;
 }
 
 function StackBadge({ stack }: { stack: Stack }) {
@@ -126,7 +155,10 @@ function PullCard({
 }) {
   return (
     <div className="flex gap-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
-      <span className="w-6 shrink-0 pt-0.5 text-right font-mono text-sm text-neutral-400">
+      <span
+        className="shrink-0 pt-0.5 text-right font-mono text-sm text-neutral-400"
+        style={{ width: numberColumnWidth(size) }}
+      >
         <span aria-hidden>{position}</span>
         <span className="sr-only">
           {`Position ${position} of ${size}${
