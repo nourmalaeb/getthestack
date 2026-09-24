@@ -1,26 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import {
-  GitHubError,
-  getPull,
-  getStack,
-  type PullRequest,
-  type Stack,
-} from "@/lib/github";
+import { GitHubError, type PullRequest, type Stack } from "@/lib/github";
+import { loadStack } from "@/lib/stack";
 
 type Props = PageProps<"/[owner]/[repo]/stacks/[number]">;
 
 async function load(props: Props) {
   const { owner, repo, number } = await props.params;
-  const n = Number(number);
-  if (!Number.isInteger(n) || n <= 0) notFound();
-
   try {
-    const stack = await getStack(owner, repo, n);
-    const pulls = await Promise.all(
-      stack.pull_requests.map((pr) => getPull(owner, repo, pr.number)),
-    );
-    return { owner, repo, stack, pulls };
+    return await loadStack(owner, repo, number);
   } catch (e) {
     if (e instanceof GitHubError && e.status === 404) notFound();
     throw e;
