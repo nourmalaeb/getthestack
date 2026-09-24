@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         source: `${STACK}\\.md`,
         destination: "/:owner/:repo/stacks/:number/markdown",
       },
+      {
+        source: `${STACK}\\.json`,
+        destination: "/:owner/:repo/stacks/:number/json",
+      },
       // Content negotiation: agents that ask for Markdown get it at the
       // same URL a person would share.
       {
