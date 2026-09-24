@@ -1,6 +1,6 @@
 # getthestack
 
-> Shareable pages for GitHub stacked pull requests. GitHub gives each stack a number but no web URL; this site renders one. Only public repositories are supported.
+> Shareable pages for GitHub stacked pull requests. GitHub gives each stack a number but no web URL; this site renders one.
 
 Paths below are relative to this site's origin. Anywhere a GitHub URL has `github.com/{owner}/{repo}/pull/{n}`, you can swap `github.com` for this site's host.
 
@@ -18,4 +18,5 @@ Paths below are relative to this site's origin. Anywhere a GitHub URL has `githu
 ## Notes
 
 - Data comes live from the GitHub API and is cached for about 60 seconds.
-- A 503 response means GitHub's rate limit was hit; the Retry-After header says when to try again.
+- Only public repositories are served; anything else is a 404.
+- From the `.md` and `.json` URLs, a 503 means GitHub's rate limit was hit (Retry-After says when to try again) and a 502 means another GitHub API failure. The `.json` URL returns errors as `{ "error": … }`. HTML pages show an error page instead.
