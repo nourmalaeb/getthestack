@@ -7,9 +7,12 @@ GitHub gives stacks a number but no web URL; this renders one.
 
 | Path | What it does |
 | --- | --- |
-| `/{owner}/{repo}/stacks/{n}` | The stack page |
+| `/{owner}/{repo}/stacks/{n}` | The stack page. Returns Markdown instead if the request's `Accept` header asks for `text/markdown` |
+| `/{owner}/{repo}/stacks/{n}.md` | The stack as Markdown, for LLMs and agents |
+| `/{owner}/{repo}/stacks/{n}.json` | The stack as JSON |
 | `/{owner}/{repo}/pull/{n}` | Redirects to the stack that PR belongs to. You can swap `github.com` for this site in a PR link |
 | `/go?q=…` | Accepts a pasted PR/stack URL or `owner/repo#123` |
+| `/llms.txt` | Describes these URLs for LLMs and agents |
 
 ## Development
 
