@@ -77,7 +77,7 @@ export default async function StackPage(props: Props) {
           {merged} merged · into{" "}
           <code className="font-mono">{stack.base.ref}</code>
         </p>
-        <div className="mt-1 flex items-start justify-between gap-4 text-sm text-neutral-500">
+        <div className="mt-5 flex items-start justify-between gap-4 text-sm text-neutral-500">
           {/* Both versions render; CSS shows the one for the saved order, so
               it's right before hydration. */}
           <p aria-live="polite">
@@ -109,11 +109,17 @@ export default async function StackPage(props: Props) {
           </li>
         ))}
         base={
-          <div className="flex items-center gap-2 pl-4 font-mono text-sm text-neutral-500">
-            <span aria-hidden className="bottom-up:hidden">└</span>
-            <span aria-hidden className="hidden bottom-up:inline">┌</span>
+          <div className="flex items-center gap-2 pl-4 font-mono text-sm">
+            <span aria-hidden className="text-neutral-400 bottom-up:hidden">
+              └
+            </span>
+            <span aria-hidden className="hidden text-neutral-400 bottom-up:inline">
+              ┌
+            </span>
             <span className="sr-only">Base branch:</span>
-            {stack.base.ref}
+            <span className="rounded-md bg-neutral-100 px-2 py-0.5 font-medium text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200">
+              {stack.base.ref}
+            </span>
           </div>
         }
       />
