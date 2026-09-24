@@ -34,6 +34,13 @@ export default async function StackPage(props: Props) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
+      {/* React hoists this into <head>. Set here rather than in metadata
+          alternates so the href stays relative without a metadataBase. */}
+      <link
+        rel="alternate"
+        type="text/markdown"
+        href={`/${owner}/${repo}/stacks/${stack.number}.md`}
+      />
       <header className="mb-8">
         <a
           href={`https://github.com/${owner}/${repo}`}
