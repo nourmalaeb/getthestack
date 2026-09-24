@@ -31,6 +31,16 @@ async function gh<T>(
   });
 
   if (!res.ok) {
+    // Primary limit: remaining hits 0, reset is an epoch time. Secondary
+    // limits: 403/429 with retry-after in seconds.
+    const retryAfter = Number(res.headers.get("retry-after"));
+    if (retryAfter > 0) {
+      throw new GitHubError(
+        res.status,
+        "GitHub API rate limit exceeded",
+        retryAfter,
+      );
+    }
     if (res.headers.get("x-ratelimit-remaining") === "0") {
       const reset = Number(res.headers.get("x-ratelimit-reset"));
       throw new GitHubError(
@@ -74,7 +84,7 @@ export type PullRequest = {
   draft: boolean;
   merged_at: string | null;
   head: { ref: string };
-  base: { ref: string };
+  base: { ref: string; repo: { full_name: string; private: boolean } };
   user: { login: string; avatar_url: string; html_url: string };
   additions: number;
   deletions: number;
@@ -107,11 +117,15 @@ export function getStack(owner: string, repo: string, number: number) {
   return gh<Stack>(`/repos/${owner}/${repo}/stacks/${number}`);
 }
 
-export function getPull(owner: string, repo: string, number: number) {
+export async function getPull(owner: string, repo: string, number: number) {
   assertRepo(owner, repo);
   // full+json adds body_html alongside the raw markdown body.
-  return gh<PullRequest>(
+  const pr = await gh<PullRequest>(
     `/repos/${owner}/${repo}/pulls/${number}`,
     "application/vnd.github.full+json",
   );
+  // Only public repos are supported. The token may be able to read private
+  // ones, so don't rely on GitHub to hide them.
+  if (pr.base.repo.private) throw new GitHubError(404, "Not found");
+  return pr;
 }

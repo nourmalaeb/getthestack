@@ -34,6 +34,7 @@ export function errorResponse(e: unknown) {
         { status: 503, headers: { "Retry-After": String(e.retryAfter) } },
       );
     }
+    return new Response(`${e.message}\n`, { status: 502 });
   }
   throw e;
 }
