@@ -10,9 +10,12 @@ export async function GET(
   const { owner, repo, number } = await ctx.params;
   try {
     const { stack, pulls } = await loadStack(owner, repo, number);
+    // GitHub's casing, not whatever was typed in the URL.
+    const [canonicalOwner, canonicalRepo] =
+      pulls[0]?.base.repo.full_name.split("/") ?? [owner, repo];
     return Response.json({
-      owner,
-      repo,
+      owner: canonicalOwner,
+      repo: canonicalRepo,
       number: stack.number,
       open: stack.open,
       base: stack.base.ref,
@@ -36,6 +39,6 @@ export async function GET(
       })),
     });
   } catch (e) {
-    return errorResponse(e);
+    return errorResponse(e, "json");
   }
 }

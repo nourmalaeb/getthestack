@@ -24,17 +24,29 @@ export function pullStatus(pr: PullRequest) {
   return "open";
 }
 
-/** Plain-text error response for the machine-readable stack routes. */
-export function errorResponse(e: unknown) {
-  if (e instanceof GitHubError) {
-    if (e.status === 404) return new Response("Stack not found\n", { status: 404 });
-    if (e.retryAfter) {
-      return new Response(
-        `GitHub API rate limit exceeded. Try again in ${e.retryAfter} seconds.\n`,
-        { status: 503, headers: { "Retry-After": String(e.retryAfter) } },
-      );
-    }
-    return new Response(`${e.message}\n`, { status: 502 });
+/**
+ * Error response for the machine-readable stack routes, as plain text or as
+ * JSON ({ error, retry_after? }) to match the route's content type.
+ */
+export function errorResponse(e: unknown, format: "text" | "json" = "text") {
+  if (!(e instanceof GitHubError)) throw e;
+
+  let status = 502;
+  let message = e.message;
+  const headers: Record<string, string> = {};
+  if (e.status === 404) {
+    status = 404;
+    message = "Stack not found";
+  } else if (e.retryAfter) {
+    status = 503;
+    message = `GitHub API rate limit exceeded. Try again in ${e.retryAfter} seconds.`;
+    headers["Retry-After"] = String(e.retryAfter);
   }
-  throw e;
+
+  return format === "json"
+    ? Response.json(
+        { error: message, retry_after: e.retryAfter },
+        { status, headers },
+      )
+    : new Response(`${message}\n`, { status, headers });
 }
