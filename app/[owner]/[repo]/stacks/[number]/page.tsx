@@ -112,7 +112,11 @@ export default async function StackPage(props: Props) {
           // Same border, padding, and number column as PullCard, so the
           // glyph lines up with the positions and the branch with the titles.
           <div className="flex items-center gap-4 border border-transparent px-4 font-mono text-sm">
-            <span aria-hidden className="w-6 shrink-0 text-right text-neutral-400">
+            <span
+              aria-hidden
+              className="shrink-0 text-right text-neutral-400"
+              style={{ width: numberColumnWidth(pulls.length) }}
+            >
               <span className="bottom-up:hidden">└</span>
               <span className="hidden bottom-up:inline">┌</span>
             </span>
@@ -125,6 +129,11 @@ export default async function StackPage(props: Props) {
       />
     </main>
   );
+}
+
+/** Just wide enough for the largest position, so the digits sit flush left. */
+function numberColumnWidth(size: number) {
+  return `${String(size).length}ch`;
 }
 
 function StackBadge({ stack }: { stack: Stack }) {
@@ -146,7 +155,10 @@ function PullCard({
 }) {
   return (
     <div className="flex gap-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
-      <span className="w-6 shrink-0 pt-0.5 text-right font-mono text-sm text-neutral-400">
+      <span
+        className="shrink-0 pt-0.5 text-right font-mono text-sm text-neutral-400"
+        style={{ width: numberColumnWidth(size) }}
+      >
         <span aria-hidden>{position}</span>
         <span className="sr-only">
           {`Position ${position} of ${size}${
