@@ -109,12 +109,12 @@ export default async function StackPage(props: Props) {
           </li>
         ))}
         base={
-          <div className="flex items-center gap-2 pl-4 font-mono text-sm">
-            <span aria-hidden className="text-neutral-400 bottom-up:hidden">
-              └
-            </span>
-            <span aria-hidden className="hidden text-neutral-400 bottom-up:inline">
-              ┌
+          // Same border, padding, and number column as PullCard, so the
+          // glyph lines up with the positions and the branch with the titles.
+          <div className="flex items-center gap-4 border border-transparent px-4 font-mono text-sm">
+            <span aria-hidden className="w-6 shrink-0 text-right text-neutral-400">
+              <span className="bottom-up:hidden">└</span>
+              <span className="hidden bottom-up:inline">┌</span>
             </span>
             <span className="sr-only">Base branch:</span>
             <span className="rounded-md bg-neutral-100 px-2 py-0.5 font-medium text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200">
