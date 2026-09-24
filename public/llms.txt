@@ -1,0 +1,21 @@
+# getthestack
+
+> Shareable pages for GitHub stacked pull requests. GitHub gives each stack a number but no web URL; this site renders one. Only public repositories are supported.
+
+Paths below are relative to this site's origin. Anywhere a GitHub URL has `github.com/{owner}/{repo}/pull/{n}`, you can swap `github.com` for this site's host.
+
+## Stack pages
+
+- `/{owner}/{repo}/stacks/{n}`: the stack as HTML. Send `Accept: text/markdown` to get the Markdown version at the same URL.
+- `/{owner}/{repo}/stacks/{n}.md`: the stack as Markdown. Each pull request, from the bottom of the stack (merges first) to the top, with status, author, branches, diff stats, links and the full description. Best for reading or reviewing a stack.
+- `/{owner}/{repo}/stacks/{n}.json`: the same data as JSON, with pull requests in the same bottom-to-top order.
+
+## Finding a stack
+
+- `/{owner}/{repo}/pull/{n}`: redirects to the stack that pull request belongs to.
+- `/go?q={input}`: accepts a pasted PR or stack URL, or `owner/repo#123`, and redirects to the matching page.
+
+## Notes
+
+- Data comes live from the GitHub API and is cached for about 60 seconds.
+- A 503 response means GitHub's rate limit was hit; the Retry-After header says when to try again.
