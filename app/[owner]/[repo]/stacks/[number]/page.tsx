@@ -39,7 +39,7 @@ export default async function StackPage(props: Props) {
       <link
         rel="alternate"
         type="text/markdown"
-        href={`/${owner}/${repo}/stacks/${stack.number}.md`}
+        href={`/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/stacks/${stack.number}.md`}
       />
       <header className="mb-8">
         <a
