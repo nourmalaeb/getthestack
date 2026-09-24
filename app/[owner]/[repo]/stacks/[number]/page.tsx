@@ -76,9 +76,9 @@ export default async function StackPage(props: Props) {
           <code className="font-mono">{stack.base.ref}</code>
         </p>
         <p className="mt-1 text-sm text-neutral-500">
-          Top of the stack first. #1 merges into{" "}
-          <code className="font-mono">{stack.base.ref}</code>, and each pull
-          request builds on the one below it.
+          Top of the stack first. The bottom pull request merges into{" "}
+          <code className="font-mono">{stack.base.ref}</code> first, and each
+          one builds on the one below it.
         </p>
       </header>
 
