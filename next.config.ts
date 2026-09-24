@@ -20,8 +20,6 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      // The stack URL serves HTML or Markdown depending on Accept.
-      { source: STACK, headers: [{ key: "Vary", value: "Accept" }] },
       {
         source: "/:path*",
         headers: [

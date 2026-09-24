@@ -21,7 +21,7 @@ export function stackToMarkdown({ owner, repo, stack, pulls }: LoadedStack) {
     "",
     `Repository: https://github.com/${owner}/${repo}`,
     "",
-    `Pull requests are listed bottom to top, in merge order. #1 targets \`${stack.base.ref}\`, and each later one builds on the one before it.`,
+    `Pull requests are listed bottom to top, in merge order. The first targets \`${stack.base.ref}\`, and each later one builds on the one before it.`,
   ];
 
   pulls.forEach((pr, i) => {
