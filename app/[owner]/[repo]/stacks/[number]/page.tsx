@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { GitHubError, type PullRequest, type Stack } from "@/lib/github";
 import { loadStack } from "@/lib/stack";
-import { CopyLink } from "./copy-link";
+import { CopyButton } from "./copy-button";
 
 type Props = PageProps<"/[owner]/[repo]/stacks/[number]">;
 
@@ -59,7 +59,12 @@ export default async function StackPage(props: Props) {
             >
               Markdown
             </a>
-            <CopyLink href={markdownHref} label="Copy Markdown link" />
+            <CopyButton href={markdownHref} copy="url">
+              Copy link
+            </CopyButton>
+            <CopyButton href={markdownHref} copy="content">
+              Copy markdown
+            </CopyButton>
           </span>
         </div>
         <h1 className="mt-1 text-2xl font-semibold">
