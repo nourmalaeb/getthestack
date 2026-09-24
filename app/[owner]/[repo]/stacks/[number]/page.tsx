@@ -75,18 +75,29 @@ export default async function StackPage(props: Props) {
           {merged} merged · into{" "}
           <code className="font-mono">{stack.base.ref}</code>
         </p>
+        <p className="mt-1 text-sm text-neutral-500">
+          Top of the stack first. #1 merges into{" "}
+          <code className="font-mono">{stack.base.ref}</code>, and each pull
+          request builds on the one below it.
+        </p>
       </header>
 
-      <ol className="flex flex-col gap-3">
+      {/* reversed: the list runs top-down, so its numbering counts down to 1. */}
+      <ol reversed className="flex flex-col gap-3">
         {topDown.map((pr, i) => (
           <li key={pr.number}>
-            <PullCard pr={pr} position={pulls.length - i} />
+            <PullCard
+              pr={pr}
+              position={pulls.length - i}
+              size={pulls.length}
+            />
           </li>
         ))}
       </ol>
 
       <div className="mt-3 flex items-center gap-2 pl-4 font-mono text-sm text-neutral-500">
         <span aria-hidden>└</span>
+        <span className="sr-only">Base branch:</span>
         {stack.base.ref}
       </div>
     </main>
@@ -101,11 +112,24 @@ function StackBadge({ stack }: { stack: Stack }) {
   );
 }
 
-function PullCard({ pr, position }: { pr: PullRequest; position: number }) {
+function PullCard({
+  pr,
+  position,
+  size,
+}: {
+  pr: PullRequest;
+  position: number;
+  size: number;
+}) {
   return (
     <div className="flex gap-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
       <span className="w-6 shrink-0 pt-0.5 text-right font-mono text-sm text-neutral-400">
         {position}
+        <span className="sr-only">
+          {" "}
+          of {size}
+          {position === 1 ? " (bottom)" : position === size ? " (top)" : ""}
+        </span>
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
