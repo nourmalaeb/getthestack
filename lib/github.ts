@@ -1,7 +1,5 @@
 import "server-only";
-import { getGitHubToken, invalidateGitHubToken } from "./github-token";
-
-const API = "https://api.github.com";
+import { API, getGitHubToken, invalidateGitHubToken } from "./github-token";
 
 // Stacks change as PRs are pushed/merged, but not second-to-second.
 const REVALIDATE_SECONDS = 60;
@@ -21,9 +19,8 @@ async function gh<T>(
   path: string,
   accept = "application/vnd.github+json",
 ): Promise<T> {
-  const request = async () => {
+  const request = (token: string | undefined) => {
     const headers: HeadersInit = { Accept: accept };
-    const token = await getGitHubToken();
     if (token) headers.Authorization = `Bearer ${token}`;
     return fetch(`${API}${path}`, {
       headers,
@@ -31,11 +28,11 @@ async function gh<T>(
     });
   };
 
-  let res = await request();
-  // A revoked or expired installation token: mint a fresh one and retry once.
-  if (res.status === 401) {
-    invalidateGitHubToken();
-    res = await request();
+  const token = await getGitHubToken();
+  let res = await request(token);
+  // A revoked installation token: mint a fresh one and retry once.
+  if (res.status === 401 && invalidateGitHubToken(token)) {
+    res = await request(await getGitHubToken());
   }
 
   if (!res.ok) {
