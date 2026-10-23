@@ -22,6 +22,9 @@ pnpm install
 pnpm dev
 ```
 
-Without a token you get GitHub's unauthenticated limit of 60 requests/hour.
+In production, set the `GITHUB_APP_*` variables instead (see `.env.example`).
+The site then mints its own short-lived installation tokens, so there's no
+personal token to expire. Without any credentials you get GitHub's
+unauthenticated limit of 60 requests/hour.
 A stack page costs 1 + (number of PRs) requests, cached for 60s. Only public
 repos are supported for now.

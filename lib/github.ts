@@ -1,6 +1,5 @@
 import "server-only";
-
-const API = "https://api.github.com";
+import { API, getGitHubToken, invalidateGitHubToken } from "./github-token";
 
 // Stacks change as PRs are pushed/merged, but not second-to-second.
 const REVALIDATE_SECONDS = 60;
@@ -20,15 +19,21 @@ async function gh<T>(
   path: string,
   accept = "application/vnd.github+json",
 ): Promise<T> {
-  const headers: HeadersInit = { Accept: accept };
-  if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-  }
+  const request = (token: string | undefined) => {
+    const headers: HeadersInit = { Accept: accept };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return fetch(`${API}${path}`, {
+      headers,
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
+  };
 
-  const res = await fetch(`${API}${path}`, {
-    headers,
-    next: { revalidate: REVALIDATE_SECONDS },
-  });
+  const token = await getGitHubToken();
+  let res = await request(token);
+  // A revoked installation token: mint a fresh one and retry once.
+  if (res.status === 401 && invalidateGitHubToken(token)) {
+    res = await request(await getGitHubToken());
+  }
 
   if (!res.ok) {
     // Primary limit: remaining hits 0, reset is an epoch time. Secondary
