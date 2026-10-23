@@ -1,4 +1,5 @@
 import "server-only";
+import { getGitHubToken, invalidateGitHubToken } from "./github-token";
 
 const API = "https://api.github.com";
 
@@ -20,15 +21,22 @@ async function gh<T>(
   path: string,
   accept = "application/vnd.github+json",
 ): Promise<T> {
-  const headers: HeadersInit = { Accept: accept };
-  if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-  }
+  const request = async () => {
+    const headers: HeadersInit = { Accept: accept };
+    const token = await getGitHubToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return fetch(`${API}${path}`, {
+      headers,
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
+  };
 
-  const res = await fetch(`${API}${path}`, {
-    headers,
-    next: { revalidate: REVALIDATE_SECONDS },
-  });
+  let res = await request();
+  // A revoked or expired installation token: mint a fresh one and retry once.
+  if (res.status === 401) {
+    invalidateGitHubToken();
+    res = await request();
+  }
 
   if (!res.ok) {
     // Primary limit: remaining hits 0, reset is an epoch time. Secondary
