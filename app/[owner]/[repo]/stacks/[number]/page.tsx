@@ -39,7 +39,7 @@ export default async function StackPage(props: Props) {
   const markdownHref = `/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/stacks/${stack.number}.md`;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10">
+    <main className="mx-auto w-full max-w-3xl py-10">
       {/* React hoists this into <head>. Set here rather than in metadata
           alternates so the href stays relative without a metadataBase. */}
       <link rel="alternate" type="text/markdown" href={markdownHref} />
@@ -200,7 +200,9 @@ function PullCard({ pr, position, size }: { pr: PullRequest; position: number; s
 function LinesChanged({ additions, deletions }: { additions: number; deletions: number }) {
   return (
     <span className="font-mono whitespace-nowrap">
-      <span className="text-green-600 dark:text-green-400">+{additions.toLocaleString("en-US")}</span>{" "}
+      <span className="text-green-600 dark:text-green-400">
+        +{additions.toLocaleString("en-US")}
+      </span>{" "}
       <span className="text-red-600 dark:text-red-400">−{deletions.toLocaleString("en-US")}</span>
     </span>
   );
