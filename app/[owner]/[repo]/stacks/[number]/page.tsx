@@ -71,7 +71,7 @@ export default async function StackPage(props: Props) {
           <LinesChanged additions={lines.additions} deletions={lines.deletions} />{" "}
           {lines.exact ? "lines in total" : "lines, summed across pull requests"}
         </p>
-        <div className="mt-5 flex items-start justify-between gap-4 text-sm text-secondary">
+        <div className="mt-5 flex flex-col items-start gap-3 text-sm text-secondary sm:flex-row sm:justify-between sm:gap-4">
           {/* Both versions render; CSS shows the one for the saved order, so
               it's right before hydration. */}
           <p aria-live="polite">
