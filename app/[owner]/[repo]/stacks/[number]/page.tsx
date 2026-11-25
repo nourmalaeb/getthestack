@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { GitHubError, type PullRequest, type Stack } from "@/lib/github";
-import { loadStack } from "@/lib/stack";
+import { loadStack, stackLines } from "@/lib/stack";
 import { CopyButton } from "./copy-button";
 import { ReverseButton, StackList } from "./stack-order";
 
@@ -29,7 +29,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 }
 
 export default async function StackPage(props: Props) {
-  const { owner, repo, stack, pulls } = await load(props);
+  const loaded = await load(props);
+  const { owner, repo, stack, pulls } = loaded;
+  const lines = await stackLines(loaded);
   const merged = pulls.filter((p) => p.merged_at).length;
   // Top of the stack first, so the base branch sits at the bottom. StackList
   // flips it if the reader prefers bottom first.
@@ -65,7 +67,9 @@ export default async function StackPage(props: Props) {
         <h1 className="mt-1 text-2xl font-semibold">Stack #{stack.number}</h1>
         <p className="mt-2 text-sm text-secondary">
           <StackBadge stack={stack} /> · {pulls.length} pull requests · {merged} merged · into{" "}
-          <code className="font-mono">{stack.base.ref}</code>
+          <code className="font-mono">{stack.base.ref}</code> ·{" "}
+          <LinesChanged additions={lines.additions} deletions={lines.deletions} />{" "}
+          {lines.exact ? "lines in total" : "lines, summed across pull requests"}
         </p>
         <div className="mt-5 flex items-start justify-between gap-4 text-sm text-secondary">
           {/* Both versions render; CSS shows the one for the saved order, so
@@ -164,10 +168,7 @@ function PullCard({ pr, position, size }: { pr: PullRequest; position: number; s
             <img src={pr.user.avatar_url} alt="" width={16} height={16} className="rounded-full" />
             {pr.user.login}
           </span>
-          <span className="font-mono">
-            <span className="text-green-600 dark:text-green-400">+{pr.additions}</span>{" "}
-            <span className="text-red-600 dark:text-red-400">−{pr.deletions}</span>
-          </span>
+          <LinesChanged additions={pr.additions} deletions={pr.deletions} />
           <span>{pr.changed_files} files</span>
           {pr.comments + pr.review_comments > 0 && (
             <span>{pr.comments + pr.review_comments} comments</span>
@@ -193,6 +194,15 @@ function PullCard({ pr, position, size }: { pr: PullRequest; position: number; s
         )}
       </div>
     </div>
+  );
+}
+
+function LinesChanged({ additions, deletions }: { additions: number; deletions: number }) {
+  return (
+    <span className="font-mono whitespace-nowrap">
+      <span className="text-green-600 dark:text-green-400">+{additions.toLocaleString("en-US")}</span>{" "}
+      <span className="text-red-600 dark:text-red-400">−{deletions.toLocaleString("en-US")}</span>
+    </span>
   );
 }
 

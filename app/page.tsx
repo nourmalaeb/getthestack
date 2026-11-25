@@ -5,8 +5,8 @@ export default async function Home(props: PageProps<"/">) {
     <main className="mx-auto flex w-full min-h-full flex-col grow justify-center">
       <h1 className="text-3xl font-semibold">Get the stack</h1>
       <p className="mt-2 text-secondary">
-        Shareable links for GitHub stacked pull requests. Paste any PR in a stack, or swap{" "}
-        <code className="font-mono">github.com</code> for this site in a PR URL.
+        Shareable links for GitHub stacked pull requests. Paste a stack or any PR in one, or swap{" "}
+        <code className="font-mono">github.com</code> for this site in the URL.
       </p>
 
       <form action="/go" className="mt-8 flex gap-2">
@@ -24,7 +24,7 @@ export default async function Home(props: PageProps<"/">) {
       </form>
       {error && (
         <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-          Couldn&apos;t read that. Try a PR URL or <code>owner/repo#123</code>.
+          Couldn&apos;t read that. Try a PR URL, a stack URL, or <code>owner/repo#123</code>.
         </p>
       )}
     </main>

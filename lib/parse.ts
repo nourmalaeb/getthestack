@@ -1,7 +1,8 @@
 /**
  * Turns whatever the user pasted into a path on this site. Accepts:
  *   https://github.com/o/r/pull/123[/files…]   o/r/pull/123
- *   https://github.com/o/r/stacks/123          o/r/stacks/123
+ *   https://github.com/o/r/stack/123           o/r/stack/123
+ *   o/r/stacks/123  (this site's and the API's spelling)
  *   o/r#123  (treated as a PR)
  */
 export function parseTarget(input: string): string | null {
@@ -10,10 +11,10 @@ export function parseTarget(input: string): string | null {
     .replace(/^https?:\/\//, "")
     .replace(/^(www\.)?github\.com\//, "");
 
-  const path = s.match(/^([\w.-]+)\/([\w.-]+)\/(pull|stacks)\/(\d+)/);
+  const path = s.match(/^([\w.-]+)\/([\w.-]+)\/(pull|stacks?)\/(\d+)/);
   if (path) {
     const [, owner, repo, kind, n] = path;
-    return `/${owner}/${repo}/${kind}/${n}`;
+    return `/${owner}/${repo}/${kind === "pull" ? "pull" : "stacks"}/${n}`;
   }
 
   const short = s.match(/^([\w.-]+)\/([\w.-]+)#(\d+)$/);

@@ -1,5 +1,5 @@
 import "server-only";
-import { GitHubError, getPull, getStack, type PullRequest } from "@/lib/github";
+import { compareLines, GitHubError, getPull, getStack, type PullRequest } from "@/lib/github";
 
 /** Loads a stack and its pull requests, ordered bottom (closest to base) to top. */
 export async function loadStack(owner: string, repo: string, number: string) {
@@ -16,6 +16,46 @@ export async function loadStack(owner: string, repo: string, number: string) {
 }
 
 export type LoadedStack = Awaited<ReturnType<typeof loadStack>>;
+
+/**
+ * Lines changed by the whole stack: one diff from just before the bottom pull
+ * request to the top one. Falls back to the sum of the pull requests, where a
+ * line changed in two of them counts twice, when that diff isn't available.
+ */
+export async function stackLines({ owner, repo, stack, pulls }: LoadedStack) {
+  const sum = {
+    additions: pulls.reduce((n, p) => n + p.additions, 0),
+    deletions: pulls.reduce((n, p) => n + p.deletions, 0),
+    exact: false,
+  };
+  const bottom = pulls.at(0);
+  const top = pulls.at(-1);
+  if (!bottom || !top) return sum;
+
+  // Once merged, a pull request's changes are in its merge commit; its branch
+  // may never have been an ancestor of the base.
+  const start = bottom.merged_at
+    ? `${bottom.merge_commit_sha}^`
+    : stack.base.ref;
+  const end = (top.merged_at && top.merge_commit_sha) || top.head.sha;
+
+  try {
+    const net = await compareLines(owner, repo, start, end);
+    // A net diff can't exceed the sum. If it does, unrelated work landed on the
+    // base branch between this stack's merges and is in the diff too.
+    if (
+      net &&
+      net.additions <= sum.additions &&
+      net.deletions <= sum.deletions
+    ) {
+      return { ...net, exact: true };
+    }
+  } catch (e) {
+    // E.g. the base branch is gone. Not worth failing the page over.
+    if (!(e instanceof GitHubError)) throw e;
+  }
+  return sum;
+}
 
 export function pullStatus(pr: PullRequest) {
   if (pr.merged_at) return "merged";

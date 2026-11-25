@@ -88,7 +88,9 @@ export type PullRequest = {
   state: "open" | "closed";
   draft: boolean;
   merged_at: string | null;
-  head: { ref: string };
+  /** The landed commit once merged; a test merge before that. */
+  merge_commit_sha: string | null;
+  head: { ref: string; sha: string };
   base: { ref: string; repo: { full_name: string; private: boolean } };
   user: { login: string; avatar_url: string; html_url: string };
   additions: number;
@@ -120,6 +122,32 @@ function assertRepo(owner: string, repo: string) {
 export function getStack(owner: string, repo: string, number: number) {
   assertRepo(owner, repo);
   return gh<Stack>(`/repos/${owner}/${repo}/stacks/${number}`);
+}
+
+// The compare API lists at most this many files, with no marker when it stops.
+const COMPARE_MAX_FILES = 300;
+
+/**
+ * Lines changed from the merge base of `base` and `head` to `head`. Null when
+ * there are too many files for GitHub to list them all.
+ */
+export async function compareLines(
+  owner: string,
+  repo: string,
+  base: string,
+  head: string,
+) {
+  assertRepo(owner, repo);
+  const range = `${encodeURIComponent(base)}...${encodeURIComponent(head)}`;
+  // per_page limits the commits, which aren't needed; files are unaffected.
+  const { files = [] } = await gh<{
+    files?: { additions: number; deletions: number }[];
+  }>(`/repos/${owner}/${repo}/compare/${range}?per_page=1`);
+  if (files.length >= COMPARE_MAX_FILES) return null;
+  return {
+    additions: files.reduce((sum, f) => sum + f.additions, 0),
+    deletions: files.reduce((sum, f) => sum + f.deletions, 0),
+  };
 }
 
 export async function getPull(owner: string, repo: string, number: number) {
