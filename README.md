@@ -1,7 +1,8 @@
 # getthestack
 
 Shareable pages for GitHub [stacked pull requests](https://docs.github.com/en/pull-requests/get-started/about-stacked-prs).
-GitHub gives stacks a number but no web URL; this renders one.
+GitHub's own stack page (`/{owner}/{repo}/stack/{n}`) is a 404 when signed out;
+this renders a public one.
 
 ## URLs
 
@@ -10,6 +11,7 @@ GitHub gives stacks a number but no web URL; this renders one.
 | `/{owner}/{repo}/stacks/{n}` | The stack page. Returns Markdown instead if the request's `Accept` header asks for `text/markdown` |
 | `/{owner}/{repo}/stacks/{n}.md` | The stack as Markdown, for LLMs and agents |
 | `/{owner}/{repo}/stacks/{n}.json` | The stack as JSON |
+| `/{owner}/{repo}/stack/{n}` | Redirects to the stack page, with or without `.md`/`.json`. You can swap `github.com` for this site in a stack link |
 | `/{owner}/{repo}/pull/{n}` | Redirects to the stack that PR belongs to. You can swap `github.com` for this site in a PR link |
 | `/go?q=…` | Accepts a pasted PR/stack URL or `owner/repo#123` |
 | `/llms.txt` | Describes these URLs for LLMs and agents |

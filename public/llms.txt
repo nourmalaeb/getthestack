@@ -1,8 +1,8 @@
 # getthestack
 
-> Shareable pages for GitHub stacked pull requests. GitHub gives each stack a number but no web URL; this site renders one.
+> Shareable pages for GitHub stacked pull requests. GitHub's own stack page (`github.com/{owner}/{repo}/stack/{n}`) is a 404 when signed out; this site renders a public one.
 
-Paths below are relative to this site's origin. Anywhere a GitHub URL has `github.com/{owner}/{repo}/pull/{n}`, you can swap `github.com` for this site's host.
+Paths below are relative to this site's origin. Anywhere a GitHub URL has `github.com/{owner}/{repo}/pull/{n}` or `github.com/{owner}/{repo}/stack/{n}`, you can swap `github.com` for this site's host.
 
 ## Stack pages
 
@@ -12,6 +12,7 @@ Paths below are relative to this site's origin. Anywhere a GitHub URL has `githu
 
 ## Finding a stack
 
+- `/{owner}/{repo}/stack/{n}`: redirects to `/{owner}/{repo}/stacks/{n}`. `.md` and `.json` work here too.
 - `/{owner}/{repo}/pull/{n}`: redirects to the stack that pull request belongs to.
 - `/go?q={input}`: accepts a pasted PR or stack URL, or `owner/repo#123`, and redirects to the matching page.
 

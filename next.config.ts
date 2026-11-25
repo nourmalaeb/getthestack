@@ -3,6 +3,22 @@ import type { NextConfig } from "next";
 const STACK = "/:owner/:repo/stacks/:number(\\d+)";
 
 const nextConfig: NextConfig = {
+  // Mirrors github.com/{owner}/{repo}/stack/{n}: swap the domain on a GitHub
+  // stack link and land on the stack here.
+  async redirects() {
+    return [
+      {
+        source: "/:owner/:repo/stack/:number(\\d+)",
+        destination: "/:owner/:repo/stacks/:number",
+        permanent: false,
+      },
+      {
+        source: "/:owner/:repo/stack/:number(\\d+)\\.:format(md|json)",
+        destination: "/:owner/:repo/stacks/:number.:format",
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
